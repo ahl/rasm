@@ -5,6 +5,7 @@ use pretty_hex::PrettyHex;
 use std::usize;
 
 #[cfg_attr(target_os = "macos", path = "macos.rs")]
+#[cfg_attr(target_os = "illumos", path = "illumos.rs")]
 mod os;
 
 fn foo() {
