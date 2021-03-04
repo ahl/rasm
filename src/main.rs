@@ -1,4 +1,5 @@
 #![feature(asm)]
+#![feature(decl_macro)]
 
 use pretty_hex::PrettyHex;
 use std::usize;
@@ -10,7 +11,6 @@ macro_rules! _sdt_asm {
             asm!(
                 r#"
 
-                /* {0} */
 
                 990:    nop
 
@@ -19,6 +19,7 @@ macro_rules! _sdt_asm {
                 991:
                         .long 992f-991b     // length
                         .quad 990b          // offset
+                        .quad {main}        // function
                         .asciz "provider"   // provider
                         .asciz "function"   // function
                         .asciz "probe"      // probe
@@ -34,7 +35,8 @@ macro_rules! _sdt_asm {
                 // Get back to the text section.
                 .text
             "#,
-            in(reg) x,
+            main = sym main,
+            in("rdi") x,
             options(readonly, nostack, preserves_flags),
             )
         }
@@ -45,8 +47,22 @@ fn foo() {
     _sdt_asm!();
 }
 
+mod foo {
+    pub macro bar() {}
+}
+
 fn main() {
     println!("Hello, world!");
+
+    foo::bar!();
+
+    let x = unsafe {
+        let x: u64;
+        asm!("lea {0}, [rip+0]", out(reg) x);
+        x
+    };
+
+    println!("%rip = {:#x}", x);
 
     _sdt_asm!();
     _sdt_asm!();
