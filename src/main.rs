@@ -21,16 +21,13 @@ fn main() {
 
     foo::bar!();
 
-    #[cfg(target_os = "macos")]
-    {
-        let x = unsafe {
-            let x: u64;
-            asm!("lea {0}, [rip+0]", out(reg) x);
-            x
-        };
+    let x = unsafe {
+        let x: u64;
+        asm!("lea {0}, [rip+0]", out(reg) x);
+        x
+    };
 
-        println!("%rip = {:#x}", x);
-    }
+    println!("%rip = {:#x}", x);
 
     _sdt_asm!();
     _sdt_asm!();
@@ -38,15 +35,21 @@ fn main() {
     foo();
 
     extern "C" {
-        #[link_name = ".dtrace.base"]
+        #[link_name = "__start_set_dtrace_base"]
         static dtrace_base: usize;
-        #[link_name = ".dtrace.end"]
+        #[link_name = "__stop_set_dtrace_base"]
         static dtrace_end: usize;
+
+
+        //#[link_name = "__start_set_dtrace_base"]
+        //static st: usize;
     }
 
     let data = unsafe {
         let base = (&dtrace_base as *const usize) as usize;
         let size = (&dtrace_end as *const usize) as usize;
+        //let s = (&st as *const usize) as usize;
+        //println!("s {:#x}", s);
 
         println!("{:#x} {:#x}", base, size);
 

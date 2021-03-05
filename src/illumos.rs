@@ -7,8 +7,7 @@ macro_rules! _sdt_asm {
                 r#"
                 990:    nop
 
-                // Put some data into our secret .dtrace.base section.
-                        .pushsection .dtrace.base,"a","progbits"
+                        .pushsection set_dtrace_base,"a","progbits"
                         .balign 8
 
                 991:
@@ -18,9 +17,7 @@ macro_rules! _sdt_asm {
                         .asciz "provider"   // provider
                         .asciz "function"   // function
                         .asciz "probe"      // probe
-                992:    .balign 8
-                        .set .dtrace.end, 992b
-                        .popsection
+                992:    .popsection
             "#,
             main = sym main,
             in("rdi") x,
