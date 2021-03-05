@@ -39,21 +39,27 @@ fn main() {
     foo();
 
     extern "C" {
-        #[cfg_attr(target_os = "macos", link_name = ".dtrace.base")]
+        #[cfg_attr(
+            target_os = "macos",
+            link_name = "\x01section$start$__DATA$__dtrace_probes"
+        )]
         #[cfg_attr(target_os = "illumos", link_name = "__start_set_linkme_dtrace_probes")]
-        static dtrace_base: usize;
-        #[cfg_attr(target_os = "macos", link_name = ".dtrace.end")]
+        static dtrace_probes_start: usize;
+        #[cfg_attr(
+            target_os = "macos",
+            link_name = "\x01section$end$__DATA$__dtrace_probes"
+        )]
         #[cfg_attr(target_os = "illumos", link_name = "__stop_set_linkme_dtrace_probes")]
-        static dtrace_end: usize;
+        static dtrace_probes_stop: usize;
     }
 
     let data = unsafe {
-        let base = (&dtrace_base as *const usize) as usize;
-        let size = (&dtrace_end as *const usize) as usize;
+        let start = (&dtrace_probes_start as *const usize) as usize;
+        let stop = (&dtrace_probes_stop as *const usize) as usize;
 
-        println!("{:#x} {:#x}", base, size);
+        println!("{:#x} {:#x}", start, stop);
 
-        std::slice::from_raw_parts(base as *const u8, size - base)
+        std::slice::from_raw_parts(start as *const u8, stop - start)
     };
 
     println!("{:?}", data.hex_dump());

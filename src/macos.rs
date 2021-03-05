@@ -18,13 +18,6 @@ macro_rules! _sdt_asm {
                         .asciz "probe"      // probe
                 992:    .balign 8
 
-                // Only set _.dtrace.base the first time
-                .ifndef _.dtrace.base
-                        .set  _.dtrace.base, 991b
-                .endif
-                // Reset _.dtrace.end each time we encounter a probe
-                        .set _.dtrace.end, 992b
-
                 // Get back to the text section.
                 .text
             "#,
