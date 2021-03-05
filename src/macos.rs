@@ -7,8 +7,7 @@ macro_rules! _sdt_asm {
                 r#"
                 990:    nop
 
-                // Put some data into our secret __TEXT.__dtrace section.
-                        .section __TEXT,__dtrace,regular,no_dead_strip
+                        .section __DATA,__dtrace_probes,regular,no_dead_strip
                         .balign 8
                 991:
                         .long 992f-991b     // length

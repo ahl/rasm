@@ -1,8 +1,8 @@
 #![feature(asm)]
 #![feature(decl_macro)]
 
+use linkme::distributed_slice;
 use pretty_hex::PrettyHex;
-use std::usize;
 
 #[cfg_attr(target_os = "macos", path = "macos.rs")]
 #[cfg_attr(target_os = "illumos", path = "illumos.rs")]
@@ -15,6 +15,10 @@ fn foo() {
 mod foo {
     pub macro bar() {}
 }
+
+#[allow(non_upper_case_globals)]
+#[distributed_slice]
+static dtrace_probes: [u8] = [..];
 
 fn main() {
     println!("Hello, world!");
@@ -34,22 +38,19 @@ fn main() {
 
     foo();
 
+    /*
     extern "C" {
-        #[link_name = "__start_set_dtrace_base"]
+        #[cfg_attr(target_os = "macos", link_name = ".dtrace.base")]
+        #[cfg_attr(target_os = "illumos", link_name = "__start_set_dtrace_base")]
         static dtrace_base: usize;
-        #[link_name = "__stop_set_dtrace_base"]
+        #[cfg_attr(target_os = "macos", link_name = ".dtrace.end")]
+        #[cfg_attr(target_os = "illumos", link_name = "__end_set_dtrace_base")]
         static dtrace_end: usize;
-
-
-        //#[link_name = "__start_set_dtrace_base"]
-        //static st: usize;
     }
 
     let data = unsafe {
         let base = (&dtrace_base as *const usize) as usize;
         let size = (&dtrace_end as *const usize) as usize;
-        //let s = (&st as *const usize) as usize;
-        //println!("s {:#x}", s);
 
         println!("{:#x} {:#x}", base, size);
 
@@ -57,6 +58,8 @@ fn main() {
     };
 
     println!("{:?}", data.hex_dump());
+    */
+    println!("{:?}", (&dtrace_probes as &[u8]).hex_dump());
 
     println!("done");
 }

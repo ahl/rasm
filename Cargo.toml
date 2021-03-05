@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 pretty-hex = "0.2.1"
+linkme = "0.2.4"
