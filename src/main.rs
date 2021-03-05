@@ -38,13 +38,12 @@ fn main() {
 
     foo();
 
-    /*
     extern "C" {
         #[cfg_attr(target_os = "macos", link_name = ".dtrace.base")]
-        #[cfg_attr(target_os = "illumos", link_name = "__start_set_dtrace_base")]
+        #[cfg_attr(target_os = "illumos", link_name = "__start_set_linkme_dtrace_probes")]
         static dtrace_base: usize;
         #[cfg_attr(target_os = "macos", link_name = ".dtrace.end")]
-        #[cfg_attr(target_os = "illumos", link_name = "__end_set_dtrace_base")]
+        #[cfg_attr(target_os = "illumos", link_name = "__stop_set_linkme_dtrace_probes")]
         static dtrace_end: usize;
     }
 
@@ -58,8 +57,7 @@ fn main() {
     };
 
     println!("{:?}", data.hex_dump());
-    */
-    println!("{:?}", (&dtrace_probes as &[u8]).hex_dump());
+    println!("linkme {:?}", (&dtrace_probes as &[u8]).hex_dump());
 
     println!("done");
 }

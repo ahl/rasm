@@ -7,7 +7,7 @@ macro_rules! _sdt_asm {
                 r#"
                 990:    nop
 
-                        .pushsection set_dtrace_base,"a","progbits"
+                        .pushsection set_linkme_dtrace_probes,"a","progbits"
                         .balign 8
 
                 991:
